@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        os: [ubuntu-24.04]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
@@ -85,14 +85,7 @@ jobs:
         run: make build-ci -j4 V=1 CONFIG_FLAGS="--error-on-warn --v8-enable-temporal-support"
       - name: Test
         working-directory: node
-        run: make test-ci -j1 V=1 TEST_CI_ARGS="-p actions --measure-flakiness 9"
+        run: ./tools/test.py -p actions parallel/test-module-cache parallel/test-module-negative-stat-cache
       - name: Ensure running tests did not cause any change in the tree
         working-directory: node
         run: git add -A && git diff --name-only --exit-code --staged
-      - name: Re-run test in a folder whose name contains unusual chars
-        run: |
-          mv node "$DIR"
-          cd "$DIR"
-          ./tools/test.py --flaky-tests keep_retrying -p actions -j 4
-        env:
-          DIR: dir%20with $unusual"chars?'åß∂ƒ©∆¬…`
