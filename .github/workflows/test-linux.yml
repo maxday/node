@@ -85,7 +85,7 @@ jobs:
         run: make build-ci -j4 V=1 CONFIG_FLAGS="--error-on-warn --v8-enable-temporal-support"
       - name: Test
         working-directory: node
-        run: ./tools/test.py -p actions parallel/test-module-cache parallel/test-module-negative-stat-cache
+        run: make test-ci -j1 V=1 TEST_CI_ARGS="-p actions --measure-flakiness 9"
       - name: Ensure running tests did not cause any change in the tree
         working-directory: node
         run: git add -A && git diff --name-only --exit-code --staged
